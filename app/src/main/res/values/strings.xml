@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Drink Water</string>
+
+    <string name="drink_water">Drink Water</string>
+    <string name="drink_log">Drink Log</string>
+    <string name="drink_report">Drink Report</string>
 </resources>

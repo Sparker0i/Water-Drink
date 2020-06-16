@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/bottom_nav"
+    app:startDestination="@id/drink_water_fragment"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <fragment
+        android:id="@+id/drink_water_fragment"
+        android:name="me.sparker0i.drinkwater.ui.composer.main.drink.DrinkWaterFragment"
+        android:label="drink_water_fragment"
+        tools:layout="@layout/drink_water_fragment" />
+    <fragment
+        android:id="@+id/drink_log_fragment"
+        android:name="me.sparker0i.drinkwater.ui.composer.main.log.DrinkLogFragment"
+        android:label="drink_log_fragment"
+        tools:layout="@layout/drink_log_fragment" />
+    <fragment
+        android:id="@+id/drink_report_fragment"
+        android:name="me.sparker0i.drinkwater.ui.composer.main.report.DrinkReportFragment"
+        android:label="drink_report_fragment"
+        tools:layout="@layout/drink_report_fragment" />
+
+</navigation>
