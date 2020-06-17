@@ -6,5 +6,5 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "AMOUNTS")
 data class Amounts(
     val icon: String,
-    @PrimaryKey val amount: Double
+    @PrimaryKey val amount: Int
 )

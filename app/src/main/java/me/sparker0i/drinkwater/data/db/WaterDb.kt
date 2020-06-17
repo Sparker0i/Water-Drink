@@ -25,6 +25,7 @@ abstract class WaterDb: RoomDatabase() {
 
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(context.applicationContext, WaterDb::class.java, "water.db")
+                .createFromAsset("predefined_amounts.db")
                 .build()
     }
 }
