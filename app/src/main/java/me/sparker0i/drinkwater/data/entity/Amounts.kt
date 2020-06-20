@@ -1,10 +1,10 @@
 package me.sparker0i.drinkwater.data.entity
 
+import androidx.annotation.NonNull
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 
-@Entity(tableName = "AMOUNTS")
+@Entity(tableName = "AMOUNTS", primaryKeys = ["amount", "icon"])
 data class Amounts(
-    val icon: String,
-    @PrimaryKey val amount: Int
+    @NonNull val amount: Int,
+    @NonNull val icon: String
 )

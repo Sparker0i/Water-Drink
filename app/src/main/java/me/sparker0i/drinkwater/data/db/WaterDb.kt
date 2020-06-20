@@ -9,10 +9,11 @@ import me.sparker0i.drinkwater.data.entity.WaterLog
 
 @Database(
     entities = [Amounts::class, WaterLog::class],
-    version = 1
+    version = 1,
+    exportSchema = true
 )
 abstract class WaterDb: RoomDatabase() {
-    abstract fun waterDao(): WaterDao
+    abstract val waterDao: WaterDao
 
     companion object {
         @Volatile private var instance: WaterDb? = null
@@ -25,7 +26,6 @@ abstract class WaterDb: RoomDatabase() {
 
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(context.applicationContext, WaterDb::class.java, "water.db")
-                .createFromAsset("predefined_amounts.db")
                 .build()
     }
 }
