@@ -4,4 +4,6 @@
     <string name="drink_water">Drink Water</string>
     <string name="drink_log">Drink Log</string>
     <string name="drink_report">Drink Report</string>
+
+    <string name="water_container">Water Container</string>
 </resources>
