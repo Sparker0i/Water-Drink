@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
-    android:layout_width="64dp"
-    android:layout_height="64dp"
-    android:layout_margin="8dp"
+    android:layout_width="@dimen/water_log_card_width"
+    android:layout_height="@dimen/water_log_card_height"
+    android:layout_margin="@dimen/water_log_card_margin"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <ImageView
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/water_log_image_size"
+        android:layout_height="@dimen/water_log_image_size"
         android:id="@+id/water_container"
         android:layout_gravity="center_horizontal"
         android:contentDescription="@string/water_container" />
