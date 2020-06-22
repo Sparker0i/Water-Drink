@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import me.sparker0i.drinkwater.data.entity.Amounts
+import me.sparker0i.drinkwater.data.entity.Amount
 import me.sparker0i.drinkwater.data.entity.WaterLog
 
 @Database(
-    entities = [Amounts::class, WaterLog::class],
+    entities = [Amount::class, WaterLog::class],
     version = 1,
     exportSchema = true
 )

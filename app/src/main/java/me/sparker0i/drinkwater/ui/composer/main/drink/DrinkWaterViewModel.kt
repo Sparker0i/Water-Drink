@@ -1,7 +1,7 @@
 package me.sparker0i.drinkwater.ui.composer.main.drink
 
 import androidx.lifecycle.ViewModel
-import me.sparker0i.drinkwater.data.entity.Amounts
+import me.sparker0i.drinkwater.data.entity.Amount
 import me.sparker0i.drinkwater.data.entity.WaterLog
 import me.sparker0i.drinkwater.data.repository.WaterRepository
 import me.sparker0i.drinkwater.internal.lazyDeferred
@@ -17,7 +17,7 @@ class DrinkWaterViewModel(
         waterRepository.getAmounts()
     }
 
-    fun addAmount(amount: Amounts) {
+    fun addAmount(amount: Amount) {
         waterRepository.addAmount(amount)
     }
 

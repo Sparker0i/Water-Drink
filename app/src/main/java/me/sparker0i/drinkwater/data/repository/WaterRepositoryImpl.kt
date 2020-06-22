@@ -7,20 +7,20 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.sparker0i.drinkwater.data.db.WaterDao
-import me.sparker0i.drinkwater.data.entity.Amounts
+import me.sparker0i.drinkwater.data.entity.Amount
 import me.sparker0i.drinkwater.data.entity.WaterLog
 
 class WaterRepositoryImpl(
     private val waterDao: WaterDao
 ): WaterRepository {
     override var waterLog = MutableLiveData<WaterLog>()
-    override var amounts = MutableLiveData<Amounts>()
+    override var amount = MutableLiveData<Amount>()
 
     init {
         waterLog.observeForever{wL ->
             persistWaterLog(wL)
         }
-        amounts.observeForever{amt ->
+        amount.observeForever{ amt ->
             persistAmount(amt)
         }
     }
@@ -29,8 +29,8 @@ class WaterRepositoryImpl(
         this@WaterRepositoryImpl.waterLog.postValue(waterLog)
     }
 
-    override fun addAmount(amount: Amounts) {
-        this@WaterRepositoryImpl.amounts.postValue(amount)
+    override fun addAmount(amount: Amount) {
+        this@WaterRepositoryImpl.amount.postValue(amount)
     }
 
     override suspend fun getWaterLogs(): LiveData<out List<WaterLog>> {
@@ -39,13 +39,13 @@ class WaterRepositoryImpl(
         }
     }
 
-    override suspend fun getAmounts(): LiveData<out List<Amounts>> {
+    override suspend fun getAmounts(): LiveData<out List<Amount>> {
         return withContext(Dispatchers.IO) {
             return@withContext waterDao.getAmounts()
         }
     }
 
-    private fun persistAmount(amount: Amounts) {
+    private fun persistAmount(amount: Amount) {
         GlobalScope.launch(Dispatchers.IO) {
             waterDao.insertAmount(amount)
         }
