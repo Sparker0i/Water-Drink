@@ -9,8 +9,8 @@ interface WaterRepository {
     var waterLog: MutableLiveData<WaterLog>
     var amount: MutableLiveData<Amount>
 
-    suspend fun getWaterLogs(): LiveData<out List<WaterLog>>
-    suspend fun getAmounts(): LiveData<out List<Amount>>
+    suspend fun getWaterLogs(): LiveData<List<WaterLog>>
+    suspend fun getAmounts(): LiveData<List<Amount>>
 
     fun addWaterLog(waterLog: WaterLog)
     fun addAmount(amount: Amount)

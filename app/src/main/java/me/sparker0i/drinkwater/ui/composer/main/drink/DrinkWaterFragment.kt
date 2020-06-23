@@ -19,6 +19,7 @@ import me.sparker0i.drinkwater.R
 import me.sparker0i.drinkwater.data.entity.AdaptedAmount
 import me.sparker0i.drinkwater.data.entity.WaterLog
 import me.sparker0i.drinkwater.ui.base.ScopedFragment
+import me.sparker0i.drinkwater.ui.common.FabExtendingOnScrollListener
 import me.sparker0i.drinkwater.ui.composer.main.drink.adapter.WaterLogAdapter
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
@@ -62,13 +63,16 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
             amountDialog = amountDialog.title(R.string.add_water_log)
         })
 
+        water_log_recycler_view.addOnScrollListener(FabExtendingOnScrollListener(add_new_button))
+
         add_new_button.setOnClickListener{
             amountDialog.show()
         }
 
-        water_log_recycler_view.layoutManager = StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL) //GridLayoutManager(context, 1, GridLayoutManager.HORIZONTAL, false)
         waterLogs.observe(this, Observer{wLs ->
-            water_log_recycler_view.adapter = WaterLogAdapter(context, waterLogs as LiveData<List<WaterLog>>)
+            water_log_recycler_view.layoutManager = StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL)
+            water_log_recycler_view.adapter = WaterLogAdapter(context, waterLogs)
+            //(water_log_recycler_view.adapter as WaterLogAdapter).notifyDataSetChanged()
         })
     }
 }

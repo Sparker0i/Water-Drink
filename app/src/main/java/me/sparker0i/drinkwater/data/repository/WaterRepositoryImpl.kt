@@ -33,13 +33,13 @@ class WaterRepositoryImpl(
         this@WaterRepositoryImpl.amount.postValue(amount)
     }
 
-    override suspend fun getWaterLogs(): LiveData<out List<WaterLog>> {
+    override suspend fun getWaterLogs(): LiveData<List<WaterLog>> {
         return withContext(Dispatchers.IO) {
             return@withContext waterDao.getWaterLog()
         }
     }
 
-    override suspend fun getAmounts(): LiveData<out List<Amount>> {
+    override suspend fun getAmounts(): LiveData<List<Amount>> {
         return withContext(Dispatchers.IO) {
             return@withContext waterDao.getAmounts()
         }
