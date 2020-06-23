@@ -3,5 +3,5 @@
     <dimen name="water_log_card_margin">8dp</dimen>
     <dimen name="water_log_card_width">100dp</dimen>
     <dimen name="water_log_card_height">115dp</dimen>
-    <dimen name="water_log_image_size">84dp</dimen>
+    <dimen name="water_log_image_size">100dp</dimen>
 </resources>

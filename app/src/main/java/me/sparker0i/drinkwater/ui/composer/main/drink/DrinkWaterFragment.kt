@@ -1,7 +1,6 @@
 package me.sparker0i.drinkwater.ui.composer.main.drink
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +16,7 @@ import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import kotlinx.android.synthetic.main.drink_water_fragment.*
 import kotlinx.coroutines.launch
 import me.sparker0i.drinkwater.R
+import me.sparker0i.drinkwater.data.entity.AdaptedAmount
 import me.sparker0i.drinkwater.data.entity.WaterLog
 import me.sparker0i.drinkwater.ui.base.ScopedFragment
 import me.sparker0i.drinkwater.ui.composer.main.drink.adapter.WaterLogAdapter
@@ -51,21 +51,19 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
         val waterLogs = viewModel.waterLogs.await()
         val amounts = viewModel.amounts.await()
 
-        var m = MaterialDialog(context!!, BottomSheet(LayoutMode.WRAP_CONTENT)).show {
-            lifecycleOwner(this@DrinkWaterFragment)
-            setTitle(R.string.add_water_log)
-        }
+        var amountDialog = MaterialDialog(context!!, BottomSheet(LayoutMode.WRAP_CONTENT))
+        amountDialog = amountDialog.lifecycleOwner(this@DrinkWaterFragment)
+        amountDialog.setTitle(R.string.add_water_log)
 
-        amounts.observe(this, Observer { x ->
-            m = m.gridItems(x) {m, index, item ->
+        amounts.observe(this, Observer { y ->
+            amountDialog = amountDialog.gridItems(y.map{x -> AdaptedAmount(x.amount, x.icon)}) { m, index, item ->
                 viewModel.addWaterLog(WaterLog(item.amount.toDouble(), System.currentTimeMillis(), item.icon))
             }
-            m = m.title(R.string.add_water_log)
+            amountDialog = amountDialog.title(R.string.add_water_log)
         })
 
         add_new_button.setOnClickListener{
-            Log.i("FAB", "Yes")
-            m.show()
+            amountDialog.show()
         }
 
         water_log_recycler_view.layoutManager = StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL) //GridLayoutManager(context, 1, GridLayoutManager.HORIZONTAL, false)

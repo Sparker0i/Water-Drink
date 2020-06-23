@@ -1,20 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView
-    android:layout_width="@dimen/water_log_card_width"
-    android:layout_height="@dimen/water_log_card_height"
-    android:layout_margin="@dimen/water_log_card_margin"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <ImageView
-        android:layout_width="@dimen/water_log_image_size"
-        android:layout_height="@dimen/water_log_image_size"
-        android:id="@+id/water_container"
-        android:layout_gravity="center_horizontal"
-        android:contentDescription="@string/water_container" />
-    <TextView
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/MD_GridItem"
+    >
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:gravity="center"
-        android:textAlignment="center"
-        android:id="@+id/water_amount" />
-</androidx.cardview.widget.CardView>
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        >
+        <com.afollestad.materialdialogs.bottomsheets.HeightMatchesWidthImageView
+            android:id="@+id/water_container"
+            android:layout_width="@dimen/water_log_image_size"
+            android:layout_height="@dimen/water_log_image_size"
+            android:scaleType="center"
+            android:layout_gravity="center"
+            tools:ignore="ContentDescription"
+            />
+        <com.afollestad.materialdialogs.internal.rtl.RtlTextView
+            android:id="@+id/water_amount"
+            tools:text="Item"
+            style="@style/MD_GridItemText"
+            />
+    </LinearLayout>
+</FrameLayout>
