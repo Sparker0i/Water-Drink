@@ -9,6 +9,8 @@ import kotlinx.coroutines.withContext
 import me.sparker0i.drinkwater.data.db.WaterDao
 import me.sparker0i.drinkwater.data.entity.Amount
 import me.sparker0i.drinkwater.data.entity.WaterLog
+import org.threeten.bp.OffsetDateTime
+import java.util.*
 
 class WaterRepositoryImpl(
     private val waterDao: WaterDao
@@ -36,6 +38,12 @@ class WaterRepositoryImpl(
     override suspend fun getWaterLogs(): LiveData<List<WaterLog>> {
         return withContext(Dispatchers.IO) {
             return@withContext waterDao.getWaterLog()
+        }
+    }
+
+    override suspend fun getWaterLogs(start: Long, end: Long): LiveData<List<WaterLog>> {
+        return withContext(Dispatchers.IO) {
+            return@withContext waterDao.getWaterLog(start, end)
         }
     }
 

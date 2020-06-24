@@ -4,17 +4,25 @@ import androidx.lifecycle.ViewModel
 import me.sparker0i.drinkwater.data.entity.Amount
 import me.sparker0i.drinkwater.data.entity.WaterLog
 import me.sparker0i.drinkwater.data.repository.WaterRepository
-import me.sparker0i.drinkwater.internal.lazyDeferred
+import me.sparker0i.drinkwater.internal.*
+import java.util.*
 
 class DrinkWaterViewModel(
     private val waterRepository: WaterRepository
 ) : ViewModel() {
-    val waterLogs by lazyDeferred {
+    val amounts by lazyDeferred {
+        waterRepository.getAmounts()
+    }
+
+    fun waterLogs() = deferred {
         waterRepository.getWaterLogs()
     }
 
-    val amounts by lazyDeferred {
-        waterRepository.getAmounts()
+    fun waterLogs(date: Date) = deferred {
+        waterRepository.getWaterLogs(
+            date.apply { hours = 0; minutes = 0; seconds = 0; }.time,
+            date.apply { hours = 23; minutes = 59; seconds = 59 }.time
+        )
     }
 
     fun addAmount(amount: Amount) {

@@ -10,7 +10,7 @@
         android:layout_gravity="center"
         android:orientation="vertical"
         >
-        <com.afollestad.materialdialogs.bottomsheets.HeightMatchesWidthImageView
+        <ImageView
             android:id="@+id/water_container"
             android:layout_width="@dimen/water_log_image_size"
             android:layout_height="@dimen/water_log_image_size"

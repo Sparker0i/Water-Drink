@@ -1,6 +1,7 @@
 package me.sparker0i.drinkwater.ui.composer.main.drink
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,8 @@ import me.sparker0i.drinkwater.ui.composer.main.drink.adapter.WaterLogAdapter
 import org.kodein.di.KodeinAware
 import org.kodein.di.android.x.closestKodein
 import org.kodein.di.generic.instance
+import org.threeten.bp.OffsetDateTime
+import java.util.*
 
 class DrinkWaterFragment : ScopedFragment(), KodeinAware {
 
@@ -36,6 +39,7 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        setHasOptionsMenu(true)
         return inflater.inflate(R.layout.drink_water_fragment, container, false)
     }
 
@@ -49,7 +53,7 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
     }
 
     private suspend fun execute() {
-        val waterLogs = viewModel.waterLogs.await()
+        val waterLogs = viewModel.waterLogs(Date()).await()
         val amounts = viewModel.amounts.await()
 
         var amountDialog = MaterialDialog(context!!, BottomSheet(LayoutMode.WRAP_CONTENT))
@@ -57,7 +61,7 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
         amountDialog.setTitle(R.string.add_water_log)
 
         amounts.observe(this, Observer { y ->
-            amountDialog = amountDialog.gridItems(y.map{x -> AdaptedAmount(x.amount, x.icon)}) { m, index, item ->
+            amountDialog = amountDialog.gridItems(y.map{x -> AdaptedAmount(x.amount, x.icon)}) { _, _, item ->
                 viewModel.addWaterLog(WaterLog(item.amount.toDouble(), System.currentTimeMillis(), item.icon))
             }
             amountDialog = amountDialog.title(R.string.add_water_log)
@@ -70,9 +74,11 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
         }
 
         waterLogs.observe(this, Observer{wLs ->
+            Log.i("Dated", wLs!!.size.toString())
             water_log_recycler_view.layoutManager = StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL)
             water_log_recycler_view.adapter = WaterLogAdapter(context, waterLogs)
-            //(water_log_recycler_view.adapter as WaterLogAdapter).notifyDataSetChanged()
         })
     }
+
+
 }

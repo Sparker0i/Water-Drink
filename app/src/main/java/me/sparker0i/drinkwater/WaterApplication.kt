@@ -1,6 +1,7 @@
 package me.sparker0i.drinkwater
 
 import android.app.Application
+import com.jakewharton.threetenabp.AndroidThreeTen
 import me.sparker0i.drinkwater.data.db.WaterDao
 import me.sparker0i.drinkwater.data.db.WaterDb
 import me.sparker0i.drinkwater.data.repository.WaterRepository
@@ -17,6 +18,7 @@ import org.kodein.di.generic.singleton
 class WaterApplication: Application(), KodeinAware {
     override val kodein: Kodein = Kodein.lazy{
         import(androidXModule(this@WaterApplication))
+        AndroidThreeTen.init(this@WaterApplication)
 
         bind() from singleton { WaterDb(instance()) }
         bind<WaterDao>() with singleton { instance<WaterDb>().waterDao }

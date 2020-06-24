@@ -11,6 +11,7 @@ interface WaterRepository {
 
     suspend fun getWaterLogs(): LiveData<List<WaterLog>>
     suspend fun getAmounts(): LiveData<List<Amount>>
+    suspend fun getWaterLogs(start: Long, end: Long): LiveData<List<WaterLog>>
 
     fun addWaterLog(waterLog: WaterLog)
     fun addAmount(amount: Amount)
