@@ -72,8 +72,6 @@ dependencies {
     implementation "com.afollestad.material-dialogs:bottomsheets:$dialogs_version"
     implementation "com.afollestad.material-dialogs:lifecycle:$dialogs_version"
 
-    implementation 'com.appeaser.sublimepickerlibrary:sublimepickerlibrary:2.1.2'
-
     // Test helpers
     testImplementation "androidx.room:room-testing:$room_version"
 }

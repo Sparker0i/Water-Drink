@@ -1,9 +1,12 @@
 package me.sparker0i.drinkwater.ui.composer.main.drink
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
 import android.view.*
-import androidx.core.view.get
+import androidx.annotation.AttrRes
+import androidx.core.util.Pair
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -12,7 +15,7 @@ import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.bottomsheets.BottomSheet
 import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.customListAdapter
-import com.afollestad.materialdialogs.list.getRecyclerView
+import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.android.synthetic.main.drink_water_fragment.*
 import kotlinx.coroutines.launch
 import me.sparker0i.drinkwater.R
@@ -35,6 +38,7 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
 
     private val viewModelFactory: DrinkWaterViewModelFactory by instance<DrinkWaterViewModelFactory>()
     private lateinit var viewModel: DrinkWaterViewModel
+    private lateinit var picker: MaterialDatePicker<*>
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,6 +51,7 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this, viewModelFactory).get(DrinkWaterViewModel::class.java)
+        initializePicker()
 
         launch {
             execute()
@@ -59,17 +64,37 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId) {
-            R.id.pick_date_range ->
-                println("X")
+            R.id.pick_date_range -> {
+                picker.show(parentFragmentManager, picker.toString())
+            }
         }
         return true
+    }
+
+    private fun initializePicker() {
+        val today = MaterialDatePicker.todayInUtcMilliseconds()
+        picker = MaterialDatePicker.Builder.dateRangePicker()
+            .setSelection(Pair(today, today))
+            .setTheme(resolveOrThrow(requireContext(), R.attr.materialCalendarTheme))
+            .setTitleText(R.string.pick_date_range)
+            .build()
+    }
+
+    private fun resolveOrThrow(context: Context, @AttrRes attributeResId: Int): Int {
+        val typedValue = TypedValue()
+        if (context.theme.resolveAttribute(attributeResId, typedValue, true)) {
+            return typedValue.data
+        }
+        throw IllegalArgumentException(
+            context.resources.getResourceName(attributeResId)
+        )
     }
 
     private suspend fun execute() {
         val waterLogs = viewModel.waterLogs(Date()).await()
         val amounts = viewModel.amounts.await()
 
-        var amountDialog = MaterialDialog(context!!, BottomSheet(LayoutMode.WRAP_CONTENT))
+        var amountDialog = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT))
             .apply {
                 lifecycleOwner(this@DrinkWaterFragment)
                 setTitle(R.string.add_water_log)
