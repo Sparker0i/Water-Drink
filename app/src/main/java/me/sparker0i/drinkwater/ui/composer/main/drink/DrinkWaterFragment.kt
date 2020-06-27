@@ -7,6 +7,8 @@ import android.util.TypedValue
 import android.view.*
 import androidx.annotation.AttrRes
 import androidx.core.util.Pair
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -17,7 +19,7 @@ import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.customListAdapter
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.android.synthetic.main.drink_water_fragment.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import me.sparker0i.drinkwater.R
 import me.sparker0i.drinkwater.data.entity.Amount
 import me.sparker0i.drinkwater.data.entity.WaterLog
@@ -40,6 +42,13 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
     private lateinit var viewModel: DrinkWaterViewModel
     private lateinit var picker: MaterialDatePicker<*>
 
+    private lateinit var amounts: LiveData<List<Amount>>
+    private lateinit var waterLogs: LiveData<List<WaterLog>>
+    private val dates = MutableLiveData<Pair<Long, Long>>()
+
+    val job = Job()
+    val uiScope = CoroutineScope(Dispatchers.Main + job)
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -51,9 +60,9 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this, viewModelFactory).get(DrinkWaterViewModel::class.java)
-        initializePicker()
 
         launch {
+            initializePicker()
             execute()
         }
     }
@@ -66,13 +75,18 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
         when(item.itemId) {
             R.id.pick_date_range -> {
                 picker.show(parentFragmentManager, picker.toString())
+                picker.addOnPositiveButtonClickListener { selection ->
+                    val x = selection as Pair<Long, Long>
+                    dates.postValue(x)
+                }
             }
         }
         return true
     }
 
-    private fun initializePicker() {
+    private suspend fun initializePicker() {
         val today = MaterialDatePicker.todayInUtcMilliseconds()
+
         picker = MaterialDatePicker.Builder.dateRangePicker()
             .setSelection(Pair(today, today))
             .setTheme(resolveOrThrow(requireContext(), R.attr.materialCalendarTheme))
@@ -91,8 +105,20 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
     }
 
     private suspend fun execute() {
-        val waterLogs = viewModel.waterLogs(Date()).await()
-        val amounts = viewModel.amounts.await()
+        waterLogs = viewModel.waterLogs(Date().time, Date().time).await()
+        amounts = viewModel.amounts.await()
+
+        waterLogs.observeForever { m ->
+            println("In")
+            println(m.size)
+        }
+
+        dates.observeForever{ value ->
+            uiScope.launch(Dispatchers.Main) {
+                waterLogs = viewModel.waterLogs(value.first!!, value.second!!).await()
+                println(value)
+            }
+        }
 
         var amountDialog = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT))
             .apply {
@@ -103,12 +129,7 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
         amounts.observe(this, Observer { y ->
             amountDialog = amountDialog.apply {
                 customListAdapter(
-                    AmountAdapter(context, amounts).setOnItemClickListener(object : ClickListener<Amount> {
-                        override fun onItemClick(item: Amount) {
-                            Log.i("Click", "X")
-                            viewModel.addWaterLog(WaterLog(item.amount.toDouble(), System.currentTimeMillis(), item.icon))
-                        }
-                    }),
+                    AmountAdapter(context, amounts),
                     StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL)
                 )
                 view.contentLayout.recyclerView?.apply {
@@ -129,15 +150,13 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
             amountDialog.show()
         }
 
-        waterLogs.observe(this, Observer{wLs ->
+        waterLogs.observeForever { wLs ->
             Log.i("Dated", wLs!!.size.toString())
             water_log_recycler_view.layoutManager = StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL)
-            water_log_recycler_view.adapter = WaterLogAdapter(context, waterLogs)
+            water_log_recycler_view.adapter = WaterLogAdapter(context, wLs)
             water_log_recycler_view.onItemClick{recyclerView, position, v ->
                 Log.i("Click", "B")
             }
-        })
+        }
     }
-
-
 }

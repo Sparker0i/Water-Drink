@@ -43,6 +43,7 @@ class WaterRepositoryImpl(
 
     override suspend fun getWaterLogs(start: Long, end: Long): LiveData<List<WaterLog>> {
         return withContext(Dispatchers.IO) {
+            println("IN1")
             return@withContext waterDao.getWaterLog(start, end)
         }
     }

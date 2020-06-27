@@ -14,36 +14,24 @@ import me.sparker0i.drinkwater.utils.Utils
 
 class WaterLogAdapter(
     private val context: Context?,
-    var waterLogs: LiveData<List<WaterLog>>
+    var waterLogs: List<WaterLog>
 ): RecyclerView.Adapter<WaterLogAdapter.ViewHolder>() {
-    companion object {
-        private lateinit var clickListener: ClickListener<WaterLog>
-    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(LayoutInflater.from(context).inflate(R.layout.layout_water_log, parent, false))
     }
 
     override fun getItemCount(): Int {
-        return waterLogs.value!!.size
+        return waterLogs.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bindItems(waterLogs.value!![position])
+        holder.bindItems(waterLogs[position])
     }
 
-    fun setOnItemClickListener(clickListener: ClickListener<WaterLog>): WaterLogAdapter {
-        WaterLogAdapter.clickListener = clickListener
-        return this
-    }
-
-    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun bindItems(waterLog: WaterLog) {
             itemView.water_amount.text = waterLog.amount.toString()
             Glide.with(itemView).load(Utils.getResId(waterLog.icon, R.drawable::class.java)).into(itemView.water_container)
-        }
-
-        override fun onClick(v: View?) {
-            clickListener.onItemClick(waterLogs.value!![adapterPosition])
         }
     }
 }
