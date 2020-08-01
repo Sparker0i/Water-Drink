@@ -7,10 +7,8 @@ import android.util.TypedValue
 import android.view.*
 import androidx.annotation.AttrRes
 import androidx.core.util.Pair
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -44,6 +42,7 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
 
     private lateinit var amounts: LiveData<List<Amount>>
     private lateinit var waterLogs: LiveData<List<WaterLog>>
+    private lateinit var amountDialog: MaterialDialog
     private val dates = MutableLiveData<Pair<Long, Long>>()
 
     val job = Job()
@@ -59,7 +58,7 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(DrinkWaterViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity(), viewModelFactory).get(DrinkWaterViewModel::class.java)
 
         launch {
             initializePicker()
@@ -84,7 +83,7 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
         return true
     }
 
-    private suspend fun initializePicker() {
+    private fun initializePicker() {
         val today = MaterialDatePicker.todayInUtcMilliseconds()
 
         picker = MaterialDatePicker.Builder.dateRangePicker()
@@ -104,23 +103,27 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
         )
     }
 
-    private suspend fun execute() {
-        waterLogs = viewModel.waterLogs(Date().time, Date().time).await()
-        amounts = viewModel.amounts.await()
+    private suspend fun retrieveWaterLogs(date1: Long? = Date().time, date2: Long? = Date().time) {
+        waterLogs = viewModel.waterLogs(date1!!, date2!!).await()
 
         waterLogs.observeForever { m ->
-            println("In")
-            println(m.size)
+            Log.i("WaterLog Size", m.size.toString())
         }
 
-        dates.observeForever{ value ->
-            uiScope.launch(Dispatchers.Main) {
-                waterLogs = viewModel.waterLogs(value.first!!, value.second!!).await()
-                println(value)
+        waterLogs.observeForever { wLs ->
+            Log.i("Dated", wLs!!.size.toString())
+            water_log_recycler_view.layoutManager = StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL)
+            water_log_recycler_view.adapter = WaterLogAdapter(context, wLs)
+            water_log_recycler_view.onItemClick{recyclerView, position, v ->
+                Log.i("Click", "B")
             }
         }
+    }
 
-        var amountDialog = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT))
+    private suspend fun retrieveAmounts() {
+        amounts = viewModel.amounts.await()
+
+        amountDialog = MaterialDialog(requireContext(), BottomSheet(LayoutMode.WRAP_CONTENT))
             .apply {
                 lifecycleOwner(this@DrinkWaterFragment)
                 setTitle(R.string.add_water_log)
@@ -143,20 +146,23 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
                 title(R.string.add_water_log)
             }
         })
+    }
+
+    private suspend fun execute() {
+        retrieveWaterLogs()
+        retrieveAmounts()
 
         water_log_recycler_view.addOnScrollListener(FabExtendingOnScrollListener(add_new_button))
 
-        add_new_button.setOnClickListener{
-            amountDialog.show()
+        dates.observeForever{ value ->
+            uiScope.launch {
+                retrieveWaterLogs(value.first, value.second!!)
+                println(value)
+            }
         }
 
-        waterLogs.observeForever { wLs ->
-            Log.i("Dated", wLs!!.size.toString())
-            water_log_recycler_view.layoutManager = StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL)
-            water_log_recycler_view.adapter = WaterLogAdapter(context, wLs)
-            water_log_recycler_view.onItemClick{recyclerView, position, v ->
-                Log.i("Click", "B")
-            }
+        add_new_button.setOnClickListener{
+            amountDialog.show()
         }
     }
 }
