@@ -6,9 +6,10 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.*
 import androidx.annotation.AttrRes
-import androidx.core.util.Pair
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.afollestad.materialdialogs.LayoutMode
 import com.afollestad.materialdialogs.MaterialDialog
@@ -17,14 +18,13 @@ import com.afollestad.materialdialogs.lifecycle.lifecycleOwner
 import com.afollestad.materialdialogs.list.customListAdapter
 import com.google.android.material.datepicker.MaterialDatePicker
 import kotlinx.android.synthetic.main.drink_water_fragment.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.launch
 import me.sparker0i.drinkwater.R
 import me.sparker0i.drinkwater.data.entity.Amount
 import me.sparker0i.drinkwater.data.entity.WaterLog
 import me.sparker0i.drinkwater.ui.base.ScopedFragment
 import me.sparker0i.drinkwater.ui.common.FabExtendingOnScrollListener
 import me.sparker0i.drinkwater.ui.composer.main.drink.adapter.AmountAdapter
-import me.sparker0i.drinkwater.ui.composer.main.drink.adapter.ClickListener
 import me.sparker0i.drinkwater.ui.composer.main.drink.adapter.WaterLogAdapter
 import me.sparker0i.drinkwater.ui.composer.main.drink.adapter.onItemClick
 import org.kodein.di.KodeinAware
@@ -43,10 +43,7 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
     private lateinit var amounts: LiveData<List<Amount>>
     private lateinit var waterLogs: LiveData<List<WaterLog>>
     private lateinit var amountDialog: MaterialDialog
-    private val dates = MutableLiveData<Pair<Long, Long>>()
-
-    val job = Job()
-    val uiScope = CoroutineScope(Dispatchers.Main + job)
+    private val dates = MutableLiveData<Long>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,9 +71,8 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
         when(item.itemId) {
             R.id.pick_date_range -> {
                 picker.show(parentFragmentManager, picker.toString())
-                picker.addOnPositiveButtonClickListener { selection ->
-                    val x = selection as Pair<Long, Long>
-                    dates.postValue(x)
+                picker.addOnPositiveButtonClickListener {selection ->
+                    dates.postValue(selection as Long)
                 }
             }
         }
@@ -86,10 +82,10 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
     private fun initializePicker() {
         val today = MaterialDatePicker.todayInUtcMilliseconds()
 
-        picker = MaterialDatePicker.Builder.dateRangePicker()
-            .setSelection(Pair(today, today))
+        picker = MaterialDatePicker.Builder.datePicker()
+            .setSelection(today)
             .setTheme(resolveOrThrow(requireContext(), R.attr.materialCalendarTheme))
-            .setTitleText(R.string.pick_date_range)
+            .setTitleText(R.string.pick_date)
             .build()
     }
 
@@ -105,10 +101,6 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
 
     private suspend fun retrieveWaterLogs(date1: Long? = Date().time, date2: Long? = Date().time) {
         waterLogs = viewModel.waterLogs(date1!!, date2!!).await()
-
-        waterLogs.observeForever { m ->
-            Log.i("WaterLog Size", m.size.toString())
-        }
 
         waterLogs.observeForever { wLs ->
             Log.i("Dated", wLs!!.size.toString())
@@ -155,8 +147,8 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
         water_log_recycler_view.addOnScrollListener(FabExtendingOnScrollListener(add_new_button))
 
         dates.observeForever{ value ->
-            uiScope.launch {
-                retrieveWaterLogs(value.first, value.second!!)
+            launch {
+                retrieveWaterLogs(value, value)
                 println(value)
             }
         }

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/pick_date_range"
-        android:title="@string/pick_date_range"
+        android:title="@string/pick_date"
         android:icon="@drawable/ic_calendar"
         app:showAsAction="always" />
 </menu>

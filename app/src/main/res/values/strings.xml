@@ -8,5 +8,5 @@
     <string name="water_container">Water Container</string>
     <string name="add_water_log">Add New</string>
 
-    <string name="pick_date_range">Pick Date Range</string>
+    <string name="pick_date">Pick Date</string>
 </resources>
