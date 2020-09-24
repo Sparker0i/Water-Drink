@@ -9,4 +9,6 @@
     <string name="add_water_log">Add New</string>
 
     <string name="pick_date">Pick Date</string>
+    <string name="day_target">Drink Target</string>
+    <string name="log_amount_time">%1$.1f\n%2$s</string>
 </resources>

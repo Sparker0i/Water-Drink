@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.layout_water_log.view.*
 import me.sparker0i.drinkwater.R
 import me.sparker0i.drinkwater.data.entity.WaterLog
 import me.sparker0i.drinkwater.utils.Utils
+import java.text.SimpleDateFormat
 
 class WaterLogAdapter(
     private val context: Context?,
@@ -31,6 +32,7 @@ class WaterLogAdapter(
     inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         fun bindItems(waterLog: WaterLog) {
             itemView.water_amount.text = waterLog.amount.toString()
+            itemView.water_time.text = SimpleDateFormat("HH:mm").format(waterLog.createdAt)
             Glide.with(itemView).load(Utils.getResId(waterLog.icon, R.drawable::class.java)).into(itemView.water_container)
         }
     }

@@ -109,6 +109,9 @@ class DrinkWaterFragment : ScopedFragment(), KodeinAware {
             water_log_recycler_view.onItemClick{recyclerView, position, v ->
                 Log.i("Click", "B")
             }
+
+            val dayAmount = wLs.fold(0.0) {sum, element -> sum + element.amount}
+            target_progress_bar.currentProgress = dayAmount.toInt()
         }
     }
 

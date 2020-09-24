@@ -15,5 +15,5 @@ interface WaterDao {
 
     @Query("SELECT * FROM WATER_LOG") fun getWaterLog(): LiveData<List<WaterLog>>
     @Query("SELECT * FROM AMOUNTS") fun getAmounts(): LiveData<List<Amount>>
-    @Query("SELECT * FROM WATER_LOG WHERE createdAt BETWEEN :start AND :end") fun getWaterLog(start: Long, end: Long): LiveData<List<WaterLog>>
+    @Query("SELECT * FROM WATER_LOG WHERE createdAt BETWEEN :start AND :end ORDER BY createdAt DESC") fun getWaterLog(start: Long, end: Long): LiveData<List<WaterLog>>
 }

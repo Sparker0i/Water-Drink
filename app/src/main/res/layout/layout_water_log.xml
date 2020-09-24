@@ -2,26 +2,28 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/MD_GridItem"
-    >
+    style="@style/MD_GridItem" >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:orientation="vertical"
-        >
+        android:orientation="vertical" >
         <ImageView
             android:id="@+id/water_container"
             android:layout_width="@dimen/water_log_image_size"
             android:layout_height="@dimen/water_log_image_size"
             android:scaleType="center"
             android:layout_gravity="center"
-            tools:ignore="ContentDescription"
-            />
-        <com.afollestad.materialdialogs.internal.rtl.RtlTextView
+            tools:ignore="ContentDescription" />
+        <TextView
             android:id="@+id/water_amount"
             tools:text="Item"
-            style="@style/MD_GridItemText"
-            />
+            android:textSize="18sp"
+            style="@style/WaterLogAmount" />
+        <TextView
+            android:id="@+id/water_time"
+            tools:text="Item"
+            android:textSize="10sp"
+            style="@style/WaterLogAmount" />
     </LinearLayout>
 </FrameLayout>

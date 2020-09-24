@@ -67,6 +67,8 @@ dependencies {
 
     debugImplementation "com.amitshekhar.android:debug-db:1.0.6"
 
+    implementation 'com.params.progressview:step-progress:1.0.2'
+
     // Material Dialogs
     implementation "com.afollestad.material-dialogs:core:$dialogs_version"
     implementation "com.afollestad.material-dialogs:bottomsheets:$dialogs_version"
